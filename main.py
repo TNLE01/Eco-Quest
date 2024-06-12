@@ -1,9 +1,5 @@
 # Author: Truong Le
 
-
-
-# Author: Truong Le
-
 import pygame, random, time, datetime, os
 import tkinter as tk
 from tkinter import *
