@@ -79,8 +79,41 @@ timesList = [timeDay1, timeDay2, timeDay3, timeDay4, timeDay5, timeNight1, timeN
 
 
 # PLants Starter Testing
+plantSeed = "Pictures/exported pics/Plant - Basic Seed.png"
 plant0 = "Pictures/exported pics/Plant - Basic 0.png"
 plant1 = "Pictures/exported pics/Plant - Basic 1.png"
 plant2 = "Pictures/exported pics/Plant - Basic 2.png"
 plant3 = "Pictures/exported pics/Plant - Basic 3.png"
 plant4 = "Pictures/exported pics/Plant - Basic 4.png"
+plant5 = "Pictures/exported pics/Plant - Basic 5.png"
+
+
+iconMoney =  "Pictures/exported pics/Icon - Money.png"
+
+
+# Shop Item Images
+
+itemEmpty = "Pictures/exported pics/Item - Empty.png"
+
+
+# Game Screen Images
+soilLevel0 = "Pictures/exported pics/Soil - 0.png"
+soilLevel1 = "Pictures/exported pics/Soil - 1.png"
+soilLevel2 = "Pictures/exported pics/Soil - 2.png"
+soilLevel3 = "Pictures/exported pics/Soil - 3.png"
+soilLevel4 = "Pictures/exported pics/Soil - 4.png"
+soilLevel5 = "Pictures/exported pics/Soil - 5.png"
+soilLevel6 = "Pictures/exported pics/Soil - 6.png"
+
+seasonSpringBackground = "Pictures/exported pics/Season - Spring.png"
+seasonSummerBackground = "Pictures/exported pics/Season - Summer.png"
+seasonFallBackground = "Pictures/exported pics/Season - Fall.png"
+seasonWinterBackground = "Pictures/exported pics/Season - Winter.png"
+
+print("Worked")
+
+waterLevel0 = "Pictures/exported pics/Water Level - 0.png"
+waterLevel1 = "Pictures/exported pics/Water Level - 1.png"
+waterLevel2 = "Pictures/exported pics/Water Level - 2.png"
+waterLevel3 = "Pictures/exported pics/Water Level - 3.png"
+waterLevel4 = "Pictures/exported pics/Water Level - 4.png"
