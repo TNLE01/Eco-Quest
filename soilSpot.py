@@ -27,15 +27,16 @@ class soilSpot():
         self.waterLevel += weather[3]
         if (0 <= self.waterLevel < 5):
             self.waterLevelPicture = waterLevelPictures[0]
-        if (5 <= self.waterLevel < 10):
+        elif (5 <= self.waterLevel < 10):
             self.waterLevelPicture = waterLevelPictures[1]
-        if (10 <= self.waterLevel < 15):
+        elif (10 <= self.waterLevel < 15):
             self.waterLevelPicture = waterLevelPictures[2]
-        if (15 <= self.waterLevel < 20):
+        elif (15 <= self.waterLevel < 20):
             self.waterLevelPicture = waterLevelPictures[3]
-        if (20 <= self.waterLevel):
+        elif (20 <= self.waterLevel < 30):
             self.waterLevelPicture = waterLevelPictures[4]
-
+        elif (30 <= self.waterLevel):
+            self.waterLevel = 30
         #print(self.waterLevel)
 
     def placePlant(self, plant):

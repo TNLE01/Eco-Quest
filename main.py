@@ -52,6 +52,9 @@ class EcoQuest():
         # Ingame Timer
         self.gameTimer = 0
 
+        # Ingame Year Day Counter
+        self.yearDayCounter = 0
+
         # Time Progress Bar Information
         self.timesSet = [[timeDay1, '#0080ff'], [timeDay2, '#00ffff'], [timeDay3, '#80ffff'], [timeDay4, '#00ffff'], [timeDay5, '#0080ff'], [timeNight1, '#0000ff'], [timeNight2, '#000080'], [timeNight3, '#000000'], [timeNight4, '#000080'], [timeNight5, '#0000ff']]
         self.currentTime = []
@@ -111,6 +114,12 @@ class EcoQuest():
         # Day Night Alpha
         self.setAlpha = 16
 
+        # Game Font
+        #self.gameFont = ctk.CTkFont(family = 'Plau', size = 20, weight = 'bold')
+
+        # Moving Frame Speed
+        self.frameSpeed = 1 # 0.5 before
+
         # Run The Main Menu
         self.mainMenu()
        # self.gameScreen()
@@ -127,6 +136,10 @@ class EcoQuest():
         #                           ctk.CTkImage(Image.open(fallSeason), size=(50 , 50)),
         #                           ctk.CTkImage(Image.open(winterSeason), size=(50 , 50))]
 
+    # Game Font
+    def gameFont(self, *args, **kwargs):
+        return ctk.CTkFont(family = 'Plau', size = kwargs.get('size', 20), weight = 'bold')
+
     # Main Tkinter Loop
     def mainloop(self):
         self.root.mainloop()
@@ -135,118 +148,297 @@ class EcoQuest():
     def mainMenu(self):
         self.mainMenuFrame = ctk.CTkFrame(self.root, width = 1250, height = 750, fg_color = 'yellow green', bg_color = 'green yellow')
         self.mainMenuFrame.grid(row = 0, column = 0)
-
-        self.mainMenuBackgroundImageLabel = ctk.CTkLabel(self.mainMenuFrame, text = 'Main Menu Background Image Here', width = 1250, height = 750, fg_color = 'orange', bg_color = 'orange')
+        # image = ctk.CTkImage(Image.open(self.gameVariables[current][1]), size=(44 , 44))
+        self.mainMenuBackgroundImageLabel = ctk.CTkLabel(self.mainMenuFrame, text = '', width = 1250, height = 750, fg_color = 'orange', bg_color = 'orange', image = ctk.CTkImage(Image.open(mainMenuImage), size = (1250 , 750)))
         self.mainMenuBackgroundImageLabel.place(x = 0, y = 0)
 
-        self.titleLabel = ctk.CTkLabel(self.mainMenuFrame, text = 'Title Here', width = 1000, height = 175, fg_color = 'dark green', bg_color = 'transparent')
+        self.titleLabel = ctk.CTkLabel(self.mainMenuFrame, text = '', width = 1000, height = 176, fg_color = 'dark green', bg_color = 'transparent', image = ctk.CTkImage(Image.open(titleCard), size = (1000 , 176)))
         self.titleLabel.place(x = 125, y = 100)
 
-        self.playButton = ctk.CTkButton(self.mainMenuFrame, text = 'Play', width = 200, height = 50, corner_radius = 0, fg_color = 'limegreen', bg_color = 'transparent', hover_color = 'forestgreen', border_color = 'saddle brown', text_color = 'saddle brown', border_width = 10, text_color_disabled = 'forestgreen', command = lambda : self.playButtonFrame(DISABLED))
-        self.playButton.place(x=525, y=410)
-        self.howToPlayButton = ctk.CTkButton(self.mainMenuFrame, text = 'How To Play', width = 200, height = 50, corner_radius = 0, fg_color = 'limegreen', bg_color = 'transparent', hover_color = 'forestgreen', border_color = 'saddle brown', text_color = 'saddle brown', border_width = 10, text_color_disabled = 'forestgreen', command = lambda : self.howToPlayButtonFrame(DISABLED))
-        self.howToPlayButton.place(x=525, y=495)
-        self.settingsButton = ctk.CTkButton(self.mainMenuFrame, text = 'Settings', width = 200, height = 50, corner_radius = 0, fg_color = 'limegreen', bg_color = 'transparent', hover_color = 'forestgreen', border_color = 'saddle brown', text_color = 'saddle brown', border_width = 10, text_color_disabled = 'forestgreen', command = lambda : self.settingsButtonFrame(DISABLED))
-        self.settingsButton.place(x=525, y=580)
-        self.exitButton = ctk.CTkButton(self.mainMenuFrame, text = 'Exit', width = 200, height = 50, corner_radius = 0, fg_color = 'limegreen', bg_color = 'transparent', hover_color = 'forestgreen', border_color = 'saddle brown', text_color = 'saddle brown', border_width = 10, text_color_disabled = 'forestgreen', command = lambda : self.exitButtonFrame(DISABLED))
-        self.exitButton.place(x=525, y=665)
+        self.playButton = self.buttonStyle(self.mainMenuFrame, 'Play', 200, 50, 'accept', command = lambda : self.playButtonFrame(DISABLED)); self.playButton.place(x = 525, y = 410)
+        self.howToPlayButton = self.buttonStyle(self.mainMenuFrame, 'How To Play', 200, 50, 'accept', command = lambda : self.howToPlayButtonFrame(DISABLED)); self.howToPlayButton.place(x = 525, y = 495)
+        self.settingsButton = self.buttonStyle(self.mainMenuFrame, 'Settings', 200, 50, 'accept', command = lambda : self.settingsButtonFrame(DISABLED)); self.settingsButton.place(x = 525, y = 580)
+        self.exitButton = self.buttonStyle(self.mainMenuFrame, 'Exit', 200, 50, 'accept', command = lambda : self.exitButtonFrame(DISABLED)); self.exitButton.place(x = 525, y = 665)
 
     # Disable or Enable Buttons
     def buttonStateSettings(self, buttonState, *args):
         for ar in args:
             ar.configure(state = buttonState)
 
+    # Make Button Style So It Doesn't Need To Be Repeated
+    def buttonStyle(self, root, text, width, height, type, *args, **kwargs):
+        if type == 'accept':
+            return ctk.CTkButton(root, text = text, width = width, height = height, corner_radius = 0,
+                                 fg_color = '#00c000', bg_color = 'transparent', hover_color = '#007e00', border_color = '#5a3c00',
+                                 text_color = '#5a3c00', border_width = 10, text_color_disabled = '#007e00',
+                                 command = kwargs.get('command', None), font = self.gameFont(), state = kwargs.get('state', NORMAL),
+                                 image = kwargs.get('image', None))
+        else:
+            return ctk.CTkButton(root, text = text, width = width, height = height, corner_radius = 0,
+                                 fg_color = '#c00000', bg_color = 'transparent', hover_color = '#7e0000', border_color = '#3c5a00',
+                                 text_color = '#3c5a00', border_width = 10, text_color_disabled = '#7e0000',
+                                 command = kwargs.get('command', None), font = self.gameFont(), state = kwargs.get('state', NORMAL),
+                                 image = kwargs.get('image', None))
+
+
     # Play Frame When Play Button Is Pressed
     def playButtonFrame(self, buttonState):
         if buttonState == DISABLED:
             self.buttonStateSettings(buttonState, self.playButton, self.howToPlayButton, self.settingsButton, self.exitButton)
         if buttonState == NORMAL:
-            self.buttonStateSettings(DISABLED, self.yesButtonPlayFrame, self.noButtonPlayFrame)
-            self.movingFrame(2, self.playChoiceFrame, 525, 325, 525, 0 - self.playChoiceFrame.winfo_reqheight(), 0, 0.5, 1, lambda: self.playChoiceFrame.destroy(), lambda: self.buttonStateSettings(buttonState, self.playButton, self.howToPlayButton, self.settingsButton, self.exitButton))
+            self.buttonStateSettings(DISABLED, self.startingSpring, self.startingSummer, self.startingFall, self.startingWinter, self.cancelButtonPlayFrame)
+            self.movingFrame(2, self.playChoiceFrame, 362.5, 250, 362.5, 0 - self.playChoiceFrame.winfo_reqheight(), 0, self.frameSpeed, 1, lambda: self.playChoiceFrame.destroy(), lambda: self.buttonStateSettings(buttonState, self.playButton, self.howToPlayButton, self.settingsButton, self.exitButton))
             return
 
-        self.playChoiceFrame = ctk.CTkFrame(self.mainMenuFrame, width = 200, height = 100, fg_color = "red", bg_color = 'red', corner_radius = 0)
-        self.backgroundImagePlayFrame = ctk.CTkImage(Image.open(buttonBackground), size=(200 , 100))
-        self.backgroundImageLabelPlayFrame = ctk.CTkLabel(self.playChoiceFrame, image = self.backgroundImage, text = '')
-        self.backgroundImageLabelPlayFrame.grid(column = 0, row = 0)
+        self.playChoiceFrame = ctk.CTkFrame(self.mainMenuFrame, width = 525, height = 250, fg_color = 'transparent', bg_color = 'transparent', corner_radius = 0)
+        #self.backgroundImagePlayFrame = ctk.CTkImage(Image.open(buttonBackground), size = (325 , 100))
+        
+        self.playLabelInfo = ctk.CTkLabel(self.playChoiceFrame, text = 'Select Starting Season', width = 525, height = 25, text_color = '#5a3c00', font = self.gameFont(size = 15))
+        self.playLabelInfo.place(x = 0, y = 0)
 
-        self.playQuestionLabel = ctk.CTkLabel(self.playChoiceFrame, text = 'Play?', width = 200, height = 25, fg_color = 'transparent', bg_color = 'transparent')
-        self.playQuestionLabel.place(x = 0, y = 0)
-        self.yesButtonPlayFrame = ctk.CTkButton(self.playChoiceFrame, state = DISABLED, text = 'Yes', width = 50, height = 50, corner_radius = 0, command = lambda: self.gameScreen(self.gameVariables['seasonsSet'][0]))
-        self.yesButtonPlayFrame.place(x=25, y=25)
-        self.noButtonPlayFrame = ctk.CTkButton(self.playChoiceFrame, state = DISABLED, text = 'No', width = 50, height = 50, corner_radius = 0, command = lambda: self.playButtonFrame(NORMAL))
-        self.noButtonPlayFrame.place(x=125, y=25)
+        self.startingSpring = self.buttonStyle(self.playChoiceFrame, '', 100, 100, 'accept', command = lambda: self.gameScreen(self.gameVariables['seasonsSet'][0]), state = DISABLED, image = ctk.CTkImage(Image.open(springSeasonMini), size = (64, 64)))
+        self.startingSpring.place(x = 25, y = 50)
+        self.startingSpring.bind('<Enter>', lambda x: self.playLabelInfo.configure(text = 'Good Balance Temperature And Humidity'))
+        self.startingSpring.bind('<Leave>', lambda x: self.playLabelInfo.configure(text = 'Select Starting Season'))
 
-        self.movingFrame(0, self.playChoiceFrame, 525, 0, 525, 325, 0, 0.5, 1, lambda: self.buttonStateSettings(NORMAL, self.yesButtonPlayFrame, self.noButtonPlayFrame))
+        self.startingSummer = self.buttonStyle(self.playChoiceFrame, '', 100, 100, 'accept', command = lambda: self.gameScreen(self.gameVariables['seasonsSet'][1]), state = DISABLED, image = ctk.CTkImage(Image.open(summerSeasonMini), size = (64, 64)))
+        self.startingSummer.place(x = 150, y = 50)
+        self.startingSummer.bind('<Enter>', lambda x: self.playLabelInfo.configure(text = 'Very High Temperatures And Wet Humidity'))
+        self.startingSummer.bind('<Leave>', lambda x: self.playLabelInfo.configure(text = 'Select Starting Season'))
+
+        self.startingFall = self.buttonStyle(self.playChoiceFrame, '', 100, 100, 'accept', command = lambda: self.gameScreen(self.gameVariables['seasonsSet'][2]), state = DISABLED, image = ctk.CTkImage(Image.open(fallSeasonMini), size = (64, 64)))
+        self.startingFall.place(x = 275, y = 50)
+        self.startingFall.bind('<Enter>', lambda x: self.playLabelInfo.configure(text = 'Chilly Temperatures And Average Humidity'))
+        self.startingFall.bind('<Leave>', lambda x: self.playLabelInfo.configure(text = 'Select Starting Season'))
+
+        self.startingWinter = self.buttonStyle(self.playChoiceFrame, '', 100, 100, 'accept', command = lambda: self.gameScreen(self.gameVariables['seasonsSet'][3]), state = DISABLED, image = ctk.CTkImage(Image.open(winterSeasonMini), size = (64, 64)))
+        self.startingWinter.place(x = 400, y = 50)
+        self.startingWinter.bind('<Enter>', lambda x: self.playLabelInfo.configure(text = 'Freezing Temperatures With Little To No Humidity, Added Snow'))
+        self.startingWinter.bind('<Leave>', lambda x: self.playLabelInfo.configure(text = 'Select Starting Season'))
+
+        self.cancelButtonPlayFrame = self.buttonStyle(self.playChoiceFrame, 'Cancel', 225, 50, 'refuse', command = lambda: self.playButtonFrame(NORMAL), state = DISABLED)
+        self.cancelButtonPlayFrame.place(x = 150, y = 175)
+        self.cancelButtonPlayFrame.bind('<Enter>', lambda x: self.playLabelInfo.configure(text = 'Cancel Season Selection'))
+        self.cancelButtonPlayFrame.bind('<Leave>', lambda x: self.playLabelInfo.configure(text = 'Select Starting Season'))
+
+        self.movingFrame(0, self.playChoiceFrame, 362.5, 0, 362.5, 250, 0, self.frameSpeed, 1, lambda: self.buttonStateSettings(NORMAL, self.startingSpring, self.startingSummer, self.startingFall, self.startingWinter, self.cancelButtonPlayFrame))#, self.yesButtonPlayFrame, self.cancelButtonPlayFrame))
     
     # How To Play Frame When How To Play Button Is Pressed
     def howToPlayButtonFrame(self, buttonState):
         if buttonState == DISABLED:
             self.buttonStateSettings(buttonState, self.playButton, self.howToPlayButton, self.settingsButton, self.exitButton)
         if buttonState == NORMAL:
-            self.buttonStateSettings(DISABLED, self.yesButtonHowToPlayFrame, self.noButtonHowToPlayFrame)
-            self.movingFrame(3, self.howToPlayChoiceFrame, 525 + self.howToPlayChoiceFrame.winfo_reqwidth(), 325, 1250, 325, 0, 0.5, 1, lambda: self.howToPlayChoiceFrame.destroy(), lambda: self.buttonStateSettings(buttonState, self.playButton, self.howToPlayButton, self.settingsButton, self.exitButton))
+            self.buttonStateSettings(DISABLED, self.closeButtonHowToPlayFrame)
+            self.movingFrame(3, self.howToPlayChoiceFrame, 350 + self.howToPlayChoiceFrame.winfo_reqwidth(), 50, 1250, 50, 0, self.frameSpeed, 1, lambda: self.howToPlayChoiceFrame.destroy(), lambda: self.buttonStateSettings(buttonState, self.playButton, self.howToPlayButton, self.settingsButton, self.exitButton))
             return
 
-        self.howToPlayChoiceFrame = ctk.CTkFrame(self.mainMenuFrame, width = 200, height = 100, fg_color = "red", bg_color = 'red', corner_radius = 0)
-        self.backgroundImageHowToPlayFrame = ctk.CTkImage(Image.open(buttonBackground), size=(200 , 100))
-        self.backgroundImageLabelHowToPlayFrame = ctk.CTkLabel(self.howToPlayChoiceFrame, image = self.backgroundImageHowToPlayFrame, text = '')
-        self.backgroundImageLabelHowToPlayFrame.grid(column = 0, row = 0)
+        self.howToPlayChoiceFrame = ctk.CTkFrame(self.mainMenuFrame, width = 550, height = 650,  fg_color = 'transparent', bg_color = 'transparent', corner_radius = 0)
+        #self.backgroundImageHowToPlayFrame = ctk.CTkImage(Image.open(buttonBackground), size=(200 , 100))
 
-        self.playQuestionLabel = ctk.CTkLabel(self.howToPlayChoiceFrame, text = 'How To Play?', width = 200, height = 25, fg_color = 'transparent', bg_color = 'transparent')
-        self.playQuestionLabel.place(x = 0, y = 0)
-        self.yesButtonHowToPlayFrame = ctk.CTkButton(self.howToPlayChoiceFrame, state = DISABLED, text = 'Yes', width = 50, height = 50, corner_radius = 0, command = self.root.destroy)
-        self.yesButtonHowToPlayFrame.place(x=25, y=25)
-        self.noButtonHowToPlayFrame = ctk.CTkButton(self.howToPlayChoiceFrame, state = DISABLED, text = 'No', width = 50, height = 50, corner_radius = 0, command = lambda: self.howToPlayButtonFrame(NORMAL))
-        self.noButtonHowToPlayFrame.place(x=125, y=25)
+        self.howToPlayLabelInfo = ctk.CTkLabel(self.howToPlayChoiceFrame, text = 'How To Play?', width = 550, height = 25, text_color = '#5a3c00', font = self.gameFont(size = 15))
+        self.howToPlayLabelInfo.place(x = 0, y = 0)
 
-        self.movingFrame(1, self.howToPlayChoiceFrame, 1250, 325, 525, 325, 0, 0.5, 1, lambda: self.buttonStateSettings(NORMAL, self.yesButtonHowToPlayFrame, self.noButtonHowToPlayFrame))
+        self.howToPlayTab = ctk.CTkTabview(self.howToPlayChoiceFrame, width = 500, height = 500, corner_radius = 0, border_width = 0, text_color = '#5a3c00', 
+                                           bg_color = '#007e00', segmented_button_selected_color = '#007e00', segmented_button_selected_hover_color = '#00c000', 
+                                           segmented_button_unselected_color = '#00c000', segmented_button_unselected_hover_color = '#007e00', fg_color = '#007e00')
+        self.howToPlayTab.place(x = 25, y = 50)
+        self.howToPlayTabInfo = self.howToPlayTab.add('Info')
+        self.howToPlayTabTime = self.howToPlayTab.add('Time')
+        self.howToPlayTabSeasons = self.howToPlayTab.add('Seasons')
+        self.howToPlayTabWeather = self.howToPlayTab.add('Weather')
+        self.howToPlayTabWildlife = self.howToPlayTab.add('Wildlife')
+        self.howToPlayTabRating = self.howToPlayTab.add('Rating')
+        self.howToPlayTabHumidity = self.howToPlayTab.add('Humidity')
+        self.howToPlayTabNutrient = self.howToPlayTab.add('Nutrient')
+        self.howToPlayTabTemperature = self.howToPlayTab.add('Temperature')
+        '''
+        self.infoTextBox = ctk.CTkTextbox(self.howToPlayTabInfo, width = 100, height = 100, corner_radius = 0, font = self.gameFont(size = 15), activate_scrollbars = False)#, fg_color = 'green')
+        self.infoTextBox.insert('0.0', 'new text to insertfdfdfd f')
+        self.infoTextBox.place(x = 0, y = 0)
+        '''
+        # frame is 500 by 464
+        # howToPlayTabInfo
+        self.samplePic1 = ctk.CTkLabel(self.howToPlayTabInfo, width = 250, height = 250, text = '', image = ctk.CTkImage(Image.open(demo4), size = (200, 200)))
+        self.samplePic1.place(x = 0, y = 0)
+        self.samplePic2 = ctk.CTkLabel(self.howToPlayTabInfo, width = 250, height = 250, text = '', image = ctk.CTkImage(Image.open(demo3), size = (200, 200)))
+        self.samplePic2.place(x = 250, y = 0)
+        self.infoHowToPlay = ctk.CTkLabel(self.howToPlayTabInfo, width = 250, height = 250, justify = 'left', text = 'The game is played by planting seeds \nand helping them grow.'
+                                          + ' Growing \nthe plants fully will net you points. \nScore a high score with as few \nplants dying.', font = self.gameFont(size = 25), text_color = '#5a3c00')
+        self.infoHowToPlay.place(x = 0, y = 250)
+
+        # howToPlayTabTime
+        self.sampleDay1 = ctk.CTkLabel(self.howToPlayTabTime, width = 100, height = 100, text = '', image = ctk.CTkImage(Image.open(timeDay1), size = (90, 90))); self.sampleDay1.place(x = 0, y = 0)
+        self.sampleDay2 = ctk.CTkLabel(self.howToPlayTabTime, width = 100, height = 100, text = '', image = ctk.CTkImage(Image.open(timeDay2), size = (90, 90))); self.sampleDay2.place(x = 100, y = 0)
+        self.sampleDay3 = ctk.CTkLabel(self.howToPlayTabTime, width = 100, height = 100, text = '', image = ctk.CTkImage(Image.open(timeDay3), size = (90, 90))); self.sampleDay3.place(x = 200, y = 0)
+        self.sampleDay4 = ctk.CTkLabel(self.howToPlayTabTime, width = 100, height = 100, text = '', image = ctk.CTkImage(Image.open(timeDay4), size = (90, 90))); self.sampleDay4.place(x = 300, y = 0)
+        self.sampleDay5 = ctk.CTkLabel(self.howToPlayTabTime, width = 100, height = 100, text = '', image = ctk.CTkImage(Image.open(timeDay5), size = (90, 90))); self.sampleDay5.place(x = 400, y = 0)
+        self.sampleDay6 = ctk.CTkLabel(self.howToPlayTabTime, width = 100, height = 100, text = '', image = ctk.CTkImage(Image.open(timeNight1), size = (90, 90))); self.sampleDay6.place(x = 0, y = 100)
+        self.sampleDay7 = ctk.CTkLabel(self.howToPlayTabTime, width = 100, height = 100, text = '', image = ctk.CTkImage(Image.open(timeNight2), size = (90, 90))); self.sampleDay7.place(x = 100, y = 100)
+        self.sampleDay8 = ctk.CTkLabel(self.howToPlayTabTime, width = 100, height = 100, text = '', image = ctk.CTkImage(Image.open(timeNight3), size = (90, 90))); self.sampleDay8.place(x = 200, y = 100)
+        self.sampleDay9 = ctk.CTkLabel(self.howToPlayTabTime, width = 100, height = 100, text = '', image = ctk.CTkImage(Image.open(timeNight4), size = (90, 90))); self.sampleDay9.place(x = 300, y = 100)
+        self.sampleDay10 = ctk.CTkLabel(self.howToPlayTabTime, width = 100, height = 100, text = '', image = ctk.CTkImage(Image.open(timeNight5), size = (90, 90))); self.sampleDay10.place(x = 400, y = 100)
+
+        self.infoTime = ctk.CTkLabel(self.howToPlayTabTime, width = 250, height = 250, justify = 'left', text = 'These are the time cycles that the \nday will go through. Plants will grow \nbetter during certain parts of the day.', font = self.gameFont(size = 25), text_color = '#5a3c00')
+        self.infoTime.place(x = 0, y = 250)
+
+        # howToPlayTabSeasons
+        self.sampleSeason1 = ctk.CTkLabel(self.howToPlayTabSeasons, width = 125, height = 125, text = '', image = ctk.CTkImage(Image.open(springSeason), size = (100, 100))); self.sampleSeason1.place(x = 0, y = 0)
+        self.sampleSeason2 = ctk.CTkLabel(self.howToPlayTabSeasons, width = 125, height = 125, text = '', image = ctk.CTkImage(Image.open(summerSeason), size = (100, 100))); self.sampleSeason2.place(x = 125, y = 0)
+        self.sampleSeason3 = ctk.CTkLabel(self.howToPlayTabSeasons, width = 125, height = 125, text = '', image = ctk.CTkImage(Image.open(fallSeason), size = (100, 100))); self.sampleSeason3.place(x = 250, y = 0)
+        self.sampleSeason4 = ctk.CTkLabel(self.howToPlayTabSeasons, width = 125, height = 125, text = '', image = ctk.CTkImage(Image.open(winterSeason), size = (100, 100))); self.sampleSeason4.place(x = 375, y = 0)
+
+        self.infoTime = ctk.CTkLabel(self.howToPlayTabSeasons, width = 250, height = 250, justify = 'left', text = 'These are the season cycles that the \nyear will go through. The seasons will \naffect the humidity, temperature, \nand weather.', font = self.gameFont(size = 25), text_color = '#5a3c00')
+        self.infoTime.place(x = 0, y = 250)
+
+        # howToPlayTabWeather
+        self.sampleWeather1 = ctk.CTkLabel(self.howToPlayTabWeather, width = 100, height = 100, text = '', image = ctk.CTkImage(Image.open(rainClear), size = (90, 90))); self.sampleWeather1.place(x = 0, y = 0)
+        self.sampleWeather2 = ctk.CTkLabel(self.howToPlayTabWeather, width = 100, height = 100, text = '', image = ctk.CTkImage(Image.open(rainLight), size = (90, 90))); self.sampleWeather2.place(x = 100, y = 0)
+        self.sampleWeather3 = ctk.CTkLabel(self.howToPlayTabWeather, width = 100, height = 100, text = '', image = ctk.CTkImage(Image.open(rainModerate), size = (90, 90))); self.sampleWeather3.place(x = 200, y = 0)
+        self.sampleWeather4 = ctk.CTkLabel(self.howToPlayTabWeather, width = 100, height = 100, text = '', image = ctk.CTkImage(Image.open(rainHeavy), size = (90, 90))); self.sampleWeather4.place(x = 300, y = 0)
+        self.sampleWeather5 = ctk.CTkLabel(self.howToPlayTabWeather, width = 100, height = 100, text = '', image = ctk.CTkImage(Image.open(rainViolent), size = (90, 90))); self.sampleWeather5.place(x = 400, y = 0)
+        self.sampleWeather6 = ctk.CTkLabel(self.howToPlayTabWeather, width = 100, height = 100, text = '', image = ctk.CTkImage(Image.open(snowClear), size = (90, 90))); self.sampleWeather6.place(x = 0, y = 100)
+        self.sampleWeather7 = ctk.CTkLabel(self.howToPlayTabWeather, width = 100, height = 100, text = '', image = ctk.CTkImage(Image.open(snowLight), size = (90, 90))); self.sampleWeather7.place(x = 100, y = 100)
+        self.sampleWeather8 = ctk.CTkLabel(self.howToPlayTabWeather, width = 100, height = 100, text = '', image = ctk.CTkImage(Image.open(snowModerate), size = (90, 90))); self.sampleWeather8.place(x = 200, y = 100)
+        self.sampleWeather9 = ctk.CTkLabel(self.howToPlayTabWeather, width = 100, height = 100, text = '', image = ctk.CTkImage(Image.open(snowHeavy), size = (90, 90))); self.sampleWeather9.place(x = 300, y = 100)
+        self.sampleWeather10 = ctk.CTkLabel(self.howToPlayTabWeather, width = 100, height = 100, text = '', image = ctk.CTkImage(Image.open(snowViolent), size = (90, 90))); self.sampleWeather10.place(x = 400, y = 100)
+
+        self.infoTime = ctk.CTkLabel(self.howToPlayTabWeather, width = 250, height = 250, justify = 'left', text = 'These are the weather options during \ngameplay. It can help water plants \nand wet the soil.', font = self.gameFont(size = 25), text_color = '#5a3c00')
+        self.infoTime.place(x = 0, y = 250)
+
+
+        # howToPlayTabWildlife
+        self.sampleWeather1 = ctk.CTkLabel(self.howToPlayTabWildlife, width = 100, height = 100, text = '', image = ctk.CTkImage(Image.open(wildlifeNone), size = (90, 90))); self.sampleWeather1.place(x = 0, y = 0)
+        self.sampleWeather2 = ctk.CTkLabel(self.howToPlayTabWildlife, width = 100, height = 100, text = '', image = ctk.CTkImage(Image.open(wildlifeFew), size = (90, 90))); self.sampleWeather2.place(x = 100, y = 0)
+        self.sampleWeather3 = ctk.CTkLabel(self.howToPlayTabWildlife, width = 100, height = 100, text = '', image = ctk.CTkImage(Image.open(wildlifeSeveral), size = (90, 90))); self.sampleWeather3.place(x = 200, y = 0)
+        self.sampleWeather4 = ctk.CTkLabel(self.howToPlayTabWildlife, width = 100, height = 100, text = '', image = ctk.CTkImage(Image.open(wildlifeMany), size = (90, 90))); self.sampleWeather4.place(x = 300, y = 0)
+        self.sampleWeather5 = ctk.CTkLabel(self.howToPlayTabWildlife, width = 100, height = 100, text = '', image = ctk.CTkImage(Image.open(wildlifeALot), size = (90, 90))); self.sampleWeather5.place(x = 400, y = 0)
+        
+        self.infoTime = ctk.CTkLabel(self.howToPlayTabWildlife, width = 250, height = 250, justify = 'left', text = 'These are the wildlife options during \ngameplay. It can help with plant \ngrowth.', font = self.gameFont(size = 25), text_color = '#5a3c00')
+        self.infoTime.place(x = 0, y = 250)
+
+        # howToPlayTabRating
+        self.sampleRating1 = ctk.CTkLabel(self.howToPlayTabRating, width = 100, height = 100, text = '', image = ctk.CTkImage(Image.open(ratingVeryBad), size = (90, 90))); self.sampleRating1.place(x = 0, y = 0)
+        self.sampleRating2 = ctk.CTkLabel(self.howToPlayTabRating, width = 100, height = 100, text = '', image = ctk.CTkImage(Image.open(ratingBad), size = (90, 90))); self.sampleRating2.place(x = 100, y = 0)
+        self.sampleRating3 = ctk.CTkLabel(self.howToPlayTabRating, width = 100, height = 100, text = '', image = ctk.CTkImage(Image.open(ratingOkay), size = (90, 90))); self.sampleRating3.place(x = 200, y = 0)
+        self.sampleRating4 = ctk.CTkLabel(self.howToPlayTabRating, width = 100, height = 100, text = '', image = ctk.CTkImage(Image.open(ratingGood), size = (90, 90))); self.sampleRating4.place(x = 300, y = 0)
+        self.sampleRating5 = ctk.CTkLabel(self.howToPlayTabRating, width = 100, height = 100, text = '', image = ctk.CTkImage(Image.open(ratingVeryGood), size = (90, 90))); self.sampleRating5.place(x = 400, y = 0)
+        
+        self.infoTime = ctk.CTkLabel(self.howToPlayTabRating, width = 250, height = 250, justify = 'left', text = 'The ratings tell you how your plants \nare doing.', font = self.gameFont(size = 25), text_color = '#5a3c00')
+        self.infoTime.place(x = 0, y = 250)
+
+        # howToPlayTabHumidity
+        self.sampleHumidity1 = ctk.CTkLabel(self.howToPlayTabHumidity, width = 100, height = 100, text = '', image = ctk.CTkImage(Image.open(humidityVeryDry), size = (90, 90))); self.sampleHumidity1.place(x = 0, y = 0)
+        self.sampleHumidity2 = ctk.CTkLabel(self.howToPlayTabHumidity, width = 100, height = 100, text = '', image = ctk.CTkImage(Image.open(humidityDry), size = (90, 90))); self.sampleHumidity2.place(x = 100, y = 0)
+        self.sampleHumidity3 = ctk.CTkLabel(self.howToPlayTabHumidity, width = 100, height = 100, text = '', image = ctk.CTkImage(Image.open(humidityOptimal), size = (90, 90))); self.sampleHumidity3.place(x = 200, y = 0)
+        self.sampleHumidity4 = ctk.CTkLabel(self.howToPlayTabHumidity, width = 100, height = 100, text = '', image = ctk.CTkImage(Image.open(humidityHumid), size = (90, 90))); self.sampleHumidity4.place(x = 300, y = 0)
+        self.sampleHumidity5 = ctk.CTkLabel(self.howToPlayTabHumidity, width = 100, height = 100, text = '', image = ctk.CTkImage(Image.open(humidityVeryHumid), size = (90, 90))); self.sampleHumidity5.place(x = 400, y = 0)
+        
+        self.infoTime = ctk.CTkLabel(self.howToPlayTabHumidity, width = 250, height = 250, justify = 'left', text = 'These are the humidity ratings, \ntelling you how wet the area currently \nis. Plants have preferred humidity.', font = self.gameFont(size = 25), text_color = '#5a3c00')
+        self.infoTime.place(x = 0, y = 250)
+
+        # howToPlayTabNutrient
+        self.sampleNutrient1 = ctk.CTkLabel(self.howToPlayTabNutrient, width = 100, height = 100, text = '', image = ctk.CTkImage(Image.open(nutrientExtremelyLow), size = (90, 90))); self.sampleNutrient1.place(x = 0, y = 0)
+        self.sampleNutrient2 = ctk.CTkLabel(self.howToPlayTabNutrient, width = 100, height = 100, text = '', image = ctk.CTkImage(Image.open(nutrientVeryLow), size = (90, 90))); self.sampleNutrient2.place(x = 100, y = 0)
+        self.sampleNutrient3 = ctk.CTkLabel(self.howToPlayTabNutrient, width = 100, height = 100, text = '', image = ctk.CTkImage(Image.open(nutrientLow), size = (90, 90))); self.sampleNutrient3.place(x = 200, y = 0)
+        self.sampleNutrient4 = ctk.CTkLabel(self.howToPlayTabNutrient, width = 100, height = 100, text = '', image = ctk.CTkImage(Image.open(nutrientOkay), size = (90, 90))); self.sampleNutrient4.place(x = 300, y = 0)
+        self.sampleNutrient5 = ctk.CTkLabel(self.howToPlayTabNutrient, width = 100, height = 100, text = '', image = ctk.CTkImage(Image.open(nutrientHigh), size = (90, 90))); self.sampleNutrient5.place(x = 400, y = 0)
+        self.sampleNutrient6 = ctk.CTkLabel(self.howToPlayTabNutrient, width = 100, height = 100, text = '', image = ctk.CTkImage(Image.open(nutrientVeryHigh), size = (90, 90))); self.sampleNutrient6.place(x = 150, y = 100)
+        self.sampleNutrient7 = ctk.CTkLabel(self.howToPlayTabNutrient, width = 100, height = 100, text = '', image = ctk.CTkImage(Image.open(nutrientExtremelyHigh), size = (90, 90))); self.sampleNutrient7.place(x = 250, y = 100)
+        
+
+        self.infoTime = ctk.CTkLabel(self.howToPlayTabNutrient, width = 250, height = 250, justify = 'left', text = 'These are the nutrient ratings, which \nwill help the plants grow. Note that \ntoo high a nutrient can have the \nopposite effect.', font = self.gameFont(size = 25), text_color = '#5a3c00')
+        self.infoTime.place(x = 0, y = 250)
+
+        # howToPlayTabTemperature
+        self.sampleTemperature1 = ctk.CTkLabel(self.howToPlayTabTemperature, width = 100, height = 100, text = '', image = ctk.CTkImage(Image.open(temperatureExtremeCold), size = (90, 90))); self.sampleTemperature1.place(x = 0, y = 0)
+        self.sampleTemperature2 = ctk.CTkLabel(self.howToPlayTabTemperature, width = 100, height = 100, text = '', image = ctk.CTkImage(Image.open(temperatureVeryCold), size = (90, 90))); self.sampleTemperature2.place(x = 100, y = 0)
+        self.sampleTemperature3 = ctk.CTkLabel(self.howToPlayTabTemperature, width = 100, height = 100, text = '', image = ctk.CTkImage(Image.open(temperatureCold), size = (90, 90))); self.sampleTemperature3.place(x = 200, y = 0)
+        self.sampleTemperature4 = ctk.CTkLabel(self.howToPlayTabTemperature, width = 100, height = 100, text = '', image = ctk.CTkImage(Image.open(temperatureOkay), size = (90, 90))); self.sampleTemperature4.place(x = 300, y = 0)
+        self.sampleTemperature5 = ctk.CTkLabel(self.howToPlayTabTemperature, width = 100, height = 100, text = '', image = ctk.CTkImage(Image.open(temperatureHot), size = (90, 90))); self.sampleTemperature5.place(x = 400, y = 0)
+        self.sampleTemperature6 = ctk.CTkLabel(self.howToPlayTabTemperature, width = 100, height = 100, text = '', image = ctk.CTkImage(Image.open(temperatureVeryHot), size = (90, 90))); self.sampleTemperature6.place(x = 150, y = 100)
+        self.sampleTemperature7 = ctk.CTkLabel(self.howToPlayTabTemperature, width = 100, height = 100, text = '', image = ctk.CTkImage(Image.open(temperatureExtremeHeat), size = (90, 90))); self.sampleTemperature7.place(x = 250, y = 100)
+        
+
+        self.infoTime = ctk.CTkLabel(self.howToPlayTabTemperature, width = 250, height = 250, justify = 'left', text = 'These are the temperature ratings. \nSome will happen more than others \nduring the different seasons.', font = self.gameFont(size = 25), text_color = '#5a3c00')
+        self.infoTime.place(x = 0, y = 250)
+
+
+
+
+
+
+
+
+        self.closeButtonHowToPlayFrame = self.buttonStyle(self.howToPlayChoiceFrame, 'Close', 225, 50, 'refuse', command = lambda: self.howToPlayButtonFrame(NORMAL), state = DISABLED)
+        self.closeButtonHowToPlayFrame.place(x = 137.5, y = 575)
+        
+        self.movingFrame(1, self.howToPlayChoiceFrame, 1250, 50, 350, 50, 0, self.frameSpeed, 1, lambda: self.buttonStateSettings(NORMAL, self.closeButtonHowToPlayFrame))
 
     # Settings Frame When Settings Button Is Pressed
     def settingsButtonFrame(self, buttonState):
         if buttonState == DISABLED:
             self.buttonStateSettings(buttonState, self.playButton, self.howToPlayButton, self.settingsButton, self.exitButton)
         if buttonState == NORMAL:
-            self.buttonStateSettings(DISABLED, self.yesButtonSettingsFrame, self.noButtonSettingsFrame)
-            self.movingFrame(1, self.settingsChoiceFrame, 525, 325, 0 - self.settingsChoiceFrame.winfo_width(), 325, 0, 0.5, 1, lambda: self.settingsChoiceFrame.destroy(), lambda: self.buttonStateSettings(buttonState, self.playButton, self.howToPlayButton, self.settingsButton, self.exitButton))
+            self.buttonStateSettings(DISABLED, self.speedButtonSettingsFrame, self.closeButtonSettingsFrame)
+            self.movingFrame(1, self.settingsChoiceFrame, 487.5, 275, 0 - self.settingsChoiceFrame.winfo_width(), 275, 0, self.frameSpeed, 1, lambda: self.settingsChoiceFrame.destroy(), lambda: self.buttonStateSettings(buttonState, self.playButton, self.howToPlayButton, self.settingsButton, self.exitButton))
             return
 
-        self.settingsChoiceFrame = ctk.CTkFrame(self.mainMenuFrame, width = 200, height = 100, fg_color = "red", bg_color = 'red', corner_radius = 0)
-        self.backgroundImageSettingsFrame = ctk.CTkImage(Image.open(buttonBackground), size=(200 , 100))
-        self.backgroundImageLabelSettingsFrame = ctk.CTkLabel(self.settingsChoiceFrame, image = self.backgroundImageSettingsFrame, text = '')
-        self.backgroundImageLabelSettingsFrame.grid(column = 0, row = 0)
+        self.settingsChoiceFrame = ctk.CTkFrame(self.mainMenuFrame, width = 275, height = 200, fg_color = 'transparent', bg_color = 'transparent', corner_radius = 0)
+        #self.backgroundImageSettingsFrame = ctk.CTkImage(Image.open(buttonBackground), size = (200 , 100))
 
-        self.playQuestionLabel = ctk.CTkLabel(self.settingsChoiceFrame, text = 'Settings?', width = 200, height = 25, fg_color = 'transparent', bg_color = 'transparent')
-        self.playQuestionLabel.place(x = 0, y = 0)
-        self.yesButtonSettingsFrame = ctk.CTkButton(self.settingsChoiceFrame, state = DISABLED, text = 'Yes', width = 50, height = 50, corner_radius = 0, command = self.root.destroy)
-        self.yesButtonSettingsFrame.place(x=25, y=25)
-        self.noButtonSettingsFrame = ctk.CTkButton(self.settingsChoiceFrame, state = DISABLED, text = 'No', width = 50, height = 50, corner_radius = 0, command = lambda: self.settingsButtonFrame(NORMAL))
-        self.noButtonSettingsFrame.place(x=125, y=25)
+        self.settingsLabelInfo = ctk.CTkLabel(self.settingsChoiceFrame, text = 'Settings', width = 275, height = 25, text_color = '#5a3c00', font = self.gameFont(size = 15))
+        self.settingsLabelInfo.place(x = 0, y = 0)
 
-        self.movingFrame(3, self.settingsChoiceFrame, 0, 325, 525, 325, 0, 0.5, 1, lambda: self.buttonStateSettings(NORMAL, self.yesButtonSettingsFrame, self.noButtonSettingsFrame))
+        def changeSpeed():
+            match self.frameSpeed:
+                case 1:
+                    self.frameSpeed = 4
+                case 4:
+                    self.frameSpeed = 7
+                case 7:
+                    self.frameSpeed = 10
+                case 10:
+                    self.frameSpeed = 1
+            self.speedButtonSettingsFrame.configure(text = 'Speed : ' + str(self.frameSpeed))
+
+        self.speedButtonSettingsFrame = self.buttonStyle(self.settingsChoiceFrame, 'Speed : ' + str(self.frameSpeed), 225, 50, 'accept', command = lambda: changeSpeed(), state = DISABLED)
+        self.speedButtonSettingsFrame.place(x = 25, y = 50)
+        self.speedButtonSettingsFrame.bind('<Enter>', lambda x: self.settingsLabelInfo.configure(text = 'Change Frame Speed'))
+        self.speedButtonSettingsFrame.bind('<Leave>', lambda x: self.settingsLabelInfo.configure(text = 'Settings'))
+
+        self.closeButtonSettingsFrame = self.buttonStyle(self.settingsChoiceFrame, 'Close', 225, 50, 'refuse', command = lambda: self.settingsButtonFrame(NORMAL), state = DISABLED)
+        self.closeButtonSettingsFrame.place(x = 25, y = 125)
+        self.closeButtonSettingsFrame.bind('<Enter>', lambda x: self.settingsLabelInfo.configure(text = 'Close Settings'))
+        self.closeButtonSettingsFrame.bind('<Leave>', lambda x: self.settingsLabelInfo.configure(text = 'Settings'))
+
+        self.movingFrame(3, self.settingsChoiceFrame, 0, 275, 487.5, 275, 0, self.frameSpeed, 1, lambda: self.buttonStateSettings(NORMAL, self.speedButtonSettingsFrame, self.closeButtonSettingsFrame))
 
     # Exit Frame When Exit Button Is Pressed
     def exitButtonFrame(self, buttonState):
         if buttonState == DISABLED:
             self.buttonStateSettings(buttonState, self.playButton, self.howToPlayButton, self.settingsButton, self.exitButton)
         if buttonState == NORMAL:
-            self.buttonStateSettings(DISABLED, self.yesButtonExitFrame, self.noButtonExitFrame)
-            self.movingFrame(0, self.exitChoiceFrame, 525, 325 + self.exitChoiceFrame.winfo_reqheight(), 525, 750, 0, 0.5, 1, lambda: self.exitChoiceFrame.destroy(), lambda: self.buttonStateSettings(buttonState, self.playButton, self.howToPlayButton, self.settingsButton, self.exitButton))
+            self.buttonStateSettings(DISABLED, self.yesButtonExitFrame, self.cancelButtonExitFrame)
+            self.movingFrame(0, self.exitChoiceFrame, 487.5, 275 + self.exitChoiceFrame.winfo_reqheight(), 487.5, 750, 0, self.frameSpeed, 1, lambda: self.exitChoiceFrame.destroy(), lambda: self.buttonStateSettings(buttonState, self.playButton, self.howToPlayButton, self.settingsButton, self.exitButton))
             return
 
-        self.exitChoiceFrame = ctk.CTkFrame(self.mainMenuFrame, width = 200, height = 100, fg_color = "red", bg_color = 'red', corner_radius = 0)
-        self.backgroundImageExitFrame = ctk.CTkImage(Image.open(buttonBackground), size=(200 , 100))
-        self.backgroundImageLabelExitFrame = ctk.CTkLabel(self.exitChoiceFrame, image = self.backgroundImageExitFrame, text = '')
-        self.backgroundImageLabelExitFrame.grid(column = 0, row = 0)
+        self.exitChoiceFrame = ctk.CTkFrame(self.mainMenuFrame, width = 275, height = 200, fg_color = 'transparent', bg_color = 'transparent', corner_radius = 0)
+        #self.backgroundImageExitFrame = ctk.CTkImage(Image.open(buttonBackground), size=(200 , 100))
 
-        self.exitQuestionLabel = ctk.CTkLabel(self.exitChoiceFrame, text = 'Exit?', width = 200, height = 25, fg_color = 'transparent', bg_color = 'transparent')
-        self.exitQuestionLabel.place(x = 0, y = 0)
-        self.yesButtonExitFrame = ctk.CTkButton(self.exitChoiceFrame, state = DISABLED, text = 'Yes', width = 50, height = 50, corner_radius = 0, command = self.root.destroy)
-        self.yesButtonExitFrame.place(x=25, y=25)
-        self.noButtonExitFrame = ctk.CTkButton(self.exitChoiceFrame, state = DISABLED, text = 'No', width = 50, height = 50, corner_radius = 0, command = lambda: self.exitButtonFrame(NORMAL))
-        self.noButtonExitFrame.place(x=125, y=25)
+        self.exitLabelInfo = ctk.CTkLabel(self.exitChoiceFrame, text = 'Exit?', width = 275, height = 25, text_color = '#5a3c00', font = self.gameFont(size = 15))
+        self.exitLabelInfo.place(x = 0, y = 0)
 
-        self.movingFrame(2, self.exitChoiceFrame, 525, 750, 525, 325, 0, 0.5, 1, lambda: self.buttonStateSettings(NORMAL, self.yesButtonExitFrame, self.noButtonExitFrame))
+        self.yesButtonExitFrame = self.buttonStyle(self.exitChoiceFrame, 'Accept', 225, 50, 'accept', command = self.root.destroy, state = DISABLED)
+        self.yesButtonExitFrame.place(x = 25, y = 50)
+        self.yesButtonExitFrame.bind('<Enter>', lambda x: self.exitLabelInfo.configure(text = 'Comfirm Exit?'))
+        self.yesButtonExitFrame.bind('<Leave>', lambda x: self.exitLabelInfo.configure(text = 'Exit?'))
+        
+        self.cancelButtonExitFrame = self.buttonStyle(self.exitChoiceFrame, 'Cancel', 225, 50, 'refuse', command = lambda: self.exitButtonFrame(NORMAL), state = DISABLED)
+        self.cancelButtonExitFrame.place(x = 25, y = 125)
+        self.cancelButtonExitFrame.bind('<Enter>', lambda x: self.exitLabelInfo.configure(text = 'Cancel Exit?'))
+        self.cancelButtonExitFrame.bind('<Leave>', lambda x: self.exitLabelInfo.configure(text = 'Exit?'))
+
+        self.movingFrame(2, self.exitChoiceFrame, 487.5, 750, 487.5, 275, 0, self.frameSpeed, 1, lambda: self.buttonStateSettings(NORMAL, self.yesButtonExitFrame, self.cancelButtonExitFrame))
 
 
     # Extra Functions To Help With Math And Frames Commands ----------------------------------------------------------------------------------------------------
@@ -268,6 +460,7 @@ class EcoQuest():
             else:
                 starty += speed
                 if starty > endy:
+                    frame.place(x = startx, y = endy)
                     self.extraCommandsHandling()
                     return
                 else:
@@ -282,6 +475,7 @@ class EcoQuest():
             else:
                 startx -= speed
                 if startx < endx:
+                    frame.place(x = endx, y = starty)
                     self.extraCommandsHandling()
                     return
                 else:
@@ -296,6 +490,7 @@ class EcoQuest():
             else:
                 starty -= speed
                 if starty < endy:
+                    frame.place(x = startx, y = endy)
                     self.extraCommandsHandling()
                     return
                 else:
@@ -311,6 +506,7 @@ class EcoQuest():
             else:
                 startx += speed
                 if startx > endx:
+                    frame.place(x = endx, y = starty)
                     self.extraCommandsHandling()
                     return
                 else:
@@ -353,7 +549,6 @@ class EcoQuest():
             self.firstGame = False
         else:
             self.gameScreenFrame.grid(row = 0, column = 0)
-
         self.startingConditions(startingSeason)
         self.pygameLoop()
 
@@ -591,16 +786,23 @@ class EcoQuest():
     # Handles The Game Time
     def timeSettings(self):
         self.screen.blit(self.timeSurface, (0, 0))
-
-        self.dayNightCycleProgressBar.step()
-        self.seasonsProgressBar.step()
+        if self.dayNightCycleProgressBar.get() == 1:
+            self.dayNightCycleProgressBar.set(0)
+        if self.seasonsProgressBar.get() == 1 and self.yearDayCounter == 21:
+            self.seasonsProgressBar.set(0)
+            self.yearDayCounter = 1
+        if self.gameTimer != 0:
+            self.dayNightCycleProgressBar.set(round(self.dayNightCycleProgressBar.get() + .01, 3))
+        #self.seasonsProgressBar.step()
 
         self.timeSurface.fill((self.currentTime[1])); self.timeSurface.set_alpha(self.setAlpha)
 
         if (self.progressBarToInt(self.dayNightCycleProgressBar) < 10):
             if self.currentTime == self.timesSet[0]: return
+                #if self.gameTimer != 0: return
             self.currentTime = self.timesSet[0]; self.setAlpha = 16
             self.temperatureProgressBar.set(random.randint(self.gameVariables['currentSeason'][3][0], self.gameVariables['currentSeason'][3][1])/100)
+            self.yearDayCounter += 1
         elif (10 <= self.progressBarToInt(self.dayNightCycleProgressBar) < 20):
             if self.currentTime == self.timesSet[1]: return
             self.currentTime = self.timesSet[1]
@@ -626,35 +828,39 @@ class EcoQuest():
         elif (80 <= self.progressBarToInt(self.dayNightCycleProgressBar) < 90):
             if self.currentTime == self.timesSet[8]: return
             self.currentTime = self.timesSet[8]
-        elif (90 <= self.progressBarToInt(self.dayNightCycleProgressBar) < 100):
+        elif (90 <= self.progressBarToInt(self.dayNightCycleProgressBar) <= 100):
             if self.currentTime == self.timesSet[9]: return
             self.currentTime = self.timesSet[9]
         
+        #if self.gameTimer != 0:
+        self.seasonsProgressBar.set(round(self.seasonsProgressBar.get() + .005, 3))
+        print(f'Day {self.yearDayCounter} and {self.seasonsProgressBar.get()} and {self.gameTimer} and {self.dayNightCycleProgressBar.get()}')
+        #print(self.progressBarToInt(self.seasonsProgressBar))
         self.timeLabel.configure(image = ctk.CTkImage(Image.open(self.currentTime[0]), size=(44 , 44)))
         self.dayNightCycleProgressBar.configure(progress_color = self.currentTime[1])
     
     # Handles Season Chnages
     def seasonSettings(self):
         
-        if (0 <= self.progressBarToInt(self.seasonsProgressBar) <= 25):
+        if (0 <= self.progressBarToInt(self.seasonsProgressBar) < 25):
             if self.gameVariables.get('currentSeason') == self.gameVariables.get('seasonsSet')[0]:
                 if self.gameTimer != 0: return
             self.gameVariables['currentSeason'] = self.gameVariables.get('seasonsSet')[0]
-        elif (25 < self.progressBarToInt(self.seasonsProgressBar) <= 50):
+        elif (25 <= self.progressBarToInt(self.seasonsProgressBar) < 50):
             if self.gameVariables.get('currentSeason') == self.gameVariables.get('seasonsSet')[1]:
                 if self.gameTimer != 0: return
             self.gameVariables['currentSeason'] = self.gameVariables.get('seasonsSet')[1]
-        elif (50 < self.progressBarToInt(self.seasonsProgressBar) <= 75):
+        elif (50 <= self.progressBarToInt(self.seasonsProgressBar) < 75):
             if self.gameVariables.get('currentSeason') == self.gameVariables.get('seasonsSet')[2]:
                 if self.gameTimer != 0: return
             self.gameVariables['currentSeason'] = self.gameVariables.get('seasonsSet')[2]
-        elif (75 < self.progressBarToInt(self.seasonsProgressBar) <= 100):
+        elif (75 <= self.progressBarToInt(self.seasonsProgressBar) <= 100):
             if self.gameVariables.get('currentSeason') == self.gameVariables.get('seasonsSet')[3]:
                 if self.gameTimer != 0: return
             self.gameVariables['currentSeason'] = self.gameVariables.get('seasonsSet')[3]
 
 
-        self.seasonLabel.configure(image = ctk.CTkImage(Image.open(self.gameVariables['currentSeason'][1]), size=(50 , 50))) # 44, 44 for other label borders
+        self.seasonLabel.configure(image = ctk.CTkImage(Image.open(self.gameVariables['currentSeason'][1]), size = (50 , 50))) # 44, 44 for other label borders
         self.seasonsProgressBar.configure(progress_color = self.gameVariables['currentSeason'][2][2], border_color = self.gameVariables['currentSeason'][2][0])
         '''
         for child in self.environmentSettingsFrame.children.values():
@@ -776,7 +982,7 @@ class EcoQuest():
             if self.gameVariables.get(current) == self.gameVariables.get(set)[4]:
                 if self.gameTimer != 0: return
             self.gameVariables[current] = self.gameVariables.get(set)[4]
-        elif (80 < self.progressBarToInt(progressBar) <= 100):
+        elif (80 < self.progressBarToInt(progressBar) < 100):
             if self.gameVariables.get(current) == self.gameVariables.get(set)[5]:
                 if self.gameTimer != 0: return
             self.gameVariables[current] = self.gameVariables.get(set)[5]
@@ -789,18 +995,32 @@ class EcoQuest():
 
     # Sets Up Random Starting Conditions For This Round
     def startingConditions(self, startingSeason):
+        
+        if startingSeason == self.gameVariables.get('seasonsSet')[0]:
+            self.seasonsProgressBar.set(0); self.yearDayCounter = 1
+            print('spring')
+        elif startingSeason == self.gameVariables.get('seasonsSet')[1]:
+            self.seasonsProgressBar.set(0.25); self.yearDayCounter = 6
+            print('summer')
+        elif startingSeason == self.gameVariables.get('seasonsSet')[2]:
+            self.seasonsProgressBar.set(.5); self.yearDayCounter = 11
+            print('fall')
+        elif startingSeason == self.gameVariables.get('seasonsSet')[3]:
+            self.seasonsProgressBar.set(.75); self.yearDayCounter = 16
+            print('winter')
 
         self.currentTime = self.timesSet[0]
         self.timeLabel.configure(image = ctk.CTkImage(Image.open(self.currentTime[0]), size=(44 , 44)))
-
+        self.dayNightCycleProgressBar.configure(progress_color = self.currentTime[1])
         self.gameVariables['currentSeason'] = startingSeason
         if startingSeason == self.gameVariables.get('seasonsSet')[3]:
             self.gameVariables['currentWeatherSet'] = self.gameVariables.get('snowsSet')
         else:
             self.gameVariables['currentWeatherSet'] = self.gameVariables.get('rainsSet')
 
+        self.setAlpha = 16
         self.dayNightCycleProgressBar.set(0)
-        self.seasonsProgressBar.set(0)
+        #self.seasonsProgressBar.set(0)
         self.rainSlider.set(0)
         self.wildlifeSlider.set(0)
         self.ratingProgressBar.set(0)
@@ -853,12 +1073,19 @@ class EcoQuest():
         elif 40 <= counter:
             self.screen.blit(plantList[4], (200, 200))
         '''
+        totalMood = 0
+        totalPlants = 0
         for soil in self.plantPlacementSpots:
             self.screen.blit(pygame.transform.scale(pygame.image.load(soil.waterLevelPicture), (50, 50)), (soil.posX, soil.posY))
+            
             if soil.currentPlant != 'Empty':
+                totalPlants += 1
                 soil.testGrowth()
                 self.screen.blit(pygame.transform.scale(pygame.image.load(soil.currentPlant.currentStage), (50, 100)), (soil.posX, soil.posY - 50))
+                totalMood += soil.currentPlant.mood
                 #print(soil.currentPlant.stageCounter)
+        if totalPlants != 0:
+            self.ratingProgressBar.set((totalMood / totalPlants) / 100)
 
     def environmentSettingsCaller(self):
         #self.timeSettings()

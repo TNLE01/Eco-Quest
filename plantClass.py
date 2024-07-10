@@ -24,46 +24,66 @@ class plant():
 
         self.harvest = False
 
+        self.mood = 50
+
     def testGrowth(self, currentWater, currentWildlife, currentHumidity, currentNutrient, currentTemperature):
         
         if self.harvest == False:
             
             if currentWater >= self.waterNeeded:
                 self.stageCounter += 2
+                self.mood += 2
             elif currentWater == 0:
                 self.dyingCounter += 1
+                self.mood += 1
             elif currentWater < self.waterNeeded:
                 self.stageCounter += 1
+                self.mood -= 1
 
             if currentHumidity in self.humidity[0]:
                 self.stageCounter += 2
+                self.mood += 2
             elif currentHumidity in self.humidity[1]:
                 self.stageCounter += 1
+                self.mood += 1
             elif currentHumidity in self.humidity[2]:
                 self.stageCounter += 0
             elif currentHumidity in self.humidity[3]:
                 self.dyingCounter += 1 
+                self.mood -= 1
 
             if currentNutrient in self.nutrient[0]:
                 self.stageCounter += 2
+                self.mood += 2
             elif currentNutrient in self.nutrient[1]:
                 self.stageCounter += 1
+                self.mood += 1
             elif currentNutrient in self.nutrient[2]:
                 self.stageCounter += 0
             elif currentNutrient in self.nutrient[3]:
-                self.dyingCounter += 1 
+                self.dyingCounter += 1
+                self.mood -= 1
 
             if currentTemperature in self.temperature[0]:
                 self.stageCounter += 2
+                self.mood += 2
             elif currentTemperature in self.temperature[1]:
                 self.stageCounter += 1
+                self.mood += 1
             elif currentTemperature in self.temperature[2]:
                 self.stageCounter += 0
             elif currentTemperature in self.temperature[3]:
-                self.dyingCounter += 1 
+                self.dyingCounter += 1
+                self.mood -= 1
+
+            if self.mood > 100:
+                self.mood = 100
+            elif self.mood < 0:
+                self.mood = 0
 
             if self.dyingCounter == self.dyingCount:
                 print('plant die')
+                self.mood = 0
 
             if self.stageCounter > self.growthStagesCounter[self.currentStageCounter]:
                 self.currentStage = self.growthStages[self.currentStageCounter]

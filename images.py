@@ -117,3 +117,16 @@ waterLevel1 = "Pictures/exported pics/Water Level - 1.png"
 waterLevel2 = "Pictures/exported pics/Water Level - 2.png"
 waterLevel3 = "Pictures/exported pics/Water Level - 3.png"
 waterLevel4 = "Pictures/exported pics/Water Level - 4.png"
+
+mainMenuImage = "Pictures/exported pics/Main Menu v2.png"
+titleCard = "Pictures/exported pics/Game Title Resize.png"
+
+springSeasonMini = "Pictures/exported pics/Season - Spring Mini.png"
+summerSeasonMini = "Pictures/exported pics/Season - Summer Mini.png"
+fallSeasonMini = "Pictures/exported pics/Season - Fall Mini.png"
+winterSeasonMini = "Pictures/exported pics/Season - Winter Mini.png"
+
+demo1 = "Pictures/exported pics/demo 1.png"
+demo2 = "Pictures/exported pics/demo 2.png"
+demo3 = "Pictures/exported pics/demo 3.png"
+demo4 = "Pictures/exported pics/demo 4.png"
